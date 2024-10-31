@@ -1,12 +1,12 @@
 use tobj;
 use nalgebra_glm::{Vec2, Vec3};
-use crate::vertex::Vertex;
+use crate::{color::Color, vertex::Vertex};
 
 pub struct Obj {
-    vertices: Vec<Vec3>,
-    normals: Vec<Vec3>,
-    texcoords: Vec<Vec2>,
-    indices: Vec<u32>,
+    pub vertices: Vec<Vec3>,
+    pub normals: Vec<Vec3>,
+    pub texcoords: Vec<Vec2>,
+    pub indices: Vec<u32>,
 }
 
 impl Obj {
@@ -41,21 +41,21 @@ impl Obj {
         })
     }
 
-    pub fn get_vertex_array(&self) -> Vec<Vertex> {
-        self.indices.iter().map(|&index| {
-            let position = self.vertices[index as usize];
-            let normal = if !self.normals.is_empty() {
-                self.normals[index as usize]
-            } else {
-                Vec3::new(0.0, 1.0, 0.0)
-            };
-            let tex_coords = if !self.texcoords.is_empty() {
-                self.texcoords[index as usize]
-            } else {
-                Vec2::new(0.0, 0.0)
-            };
-
-            Vertex::new(position, normal, tex_coords)
-        }).collect()
+    pub fn get_vertex_array(&self)-> Vec<Vertex>{
+        let mut vertex_array = Vec::new();
+        let vertex_color = Color::from_hex(0x5797ff);
+        for i in &self.indices{
+            vertex_array.push(
+                Vertex{
+                    color: vertex_color,
+                    position: self.vertices[*i as usize],
+                    normal: self.normals[*i as usize],
+                    tex_coords: self.texcoords[*i as usize],
+                    transformed_normal: Vec3::new(0.0,0.0,0.0),
+                    transformed_position: Vec3::new(0.0,0.0,0.0),
+                }
+            )
+        }
+        vertex_array
     }
 }
